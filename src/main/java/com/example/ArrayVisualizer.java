@@ -4,8 +4,10 @@ import java.util.Arrays;
 
 import com.example.QuickSortVisualizer.VisualizationCallback;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
@@ -16,6 +18,8 @@ public class ArrayVisualizer extends Canvas implements VisualizationCallback {
     private int comparingIndex1 = -1; // yellow
     private int comparingIndex2 = -1; // yellow
     private int pivotIndex = -1; // red
+    private Label pivotIndexLabel;
+    private Label comparingLabel;
 
     private static final Color UNSORTED_COLOR = Color.web("#90CAF9");
     private static final Color SORTED_COLOR = Color.web("#4CAF50");
@@ -36,11 +40,29 @@ public class ArrayVisualizer extends Canvas implements VisualizationCallback {
     public void setComparing(int index1, int index2) {
         this.comparingIndex1 = index1;
         this.comparingIndex2 = index2;
+        
+        // Update the comparing label on JavaFX thread
+        if (comparingLabel != null && arr != null && 
+            index1 >= 0 && index1 < arr.length && 
+            index2 >= 0 && index2 < arr.length) {
+            Platform.runLater(() -> 
+                comparingLabel.setText("Comparing " + arr[index1] + " to " + arr[index2])
+            );
+        }
+        
         redraw();
     }
 
     public void setPivot(int index) {
         this.pivotIndex = index;
+        
+        // Update the pivot index label on JavaFX thread
+        if (pivotIndexLabel != null) {
+            Platform.runLater(() -> 
+                pivotIndexLabel.setText("Pivot Index: " + index)
+            );
+        }
+        
         redraw();
     }
 
@@ -108,6 +130,14 @@ public class ArrayVisualizer extends Canvas implements VisualizationCallback {
         redraw();
     }
 
+    public void setPivotIndexLabel(@SuppressWarnings("exports") Label pivotIndexLabel) {
+        this.pivotIndexLabel = pivotIndexLabel;
+    }
+
+    public void setComparingLabel(@SuppressWarnings("exports") Label comparingLabel) {
+        this.comparingLabel = comparingLabel;
+    }
+
     @Override
     public void onSwap(int index1, int index2) {
         if (arr != null && index1 >= 0 && index1 < arr.length &&
@@ -120,7 +150,7 @@ public class ArrayVisualizer extends Canvas implements VisualizationCallback {
             redraw();
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -132,7 +162,7 @@ public class ArrayVisualizer extends Canvas implements VisualizationCallback {
         setComparing(index1, index2);
 
         try {
-            Thread.sleep(50);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -143,7 +173,7 @@ public class ArrayVisualizer extends Canvas implements VisualizationCallback {
         setPivot(pivotIndex);
 
         try {
-            Thread.sleep(50);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -154,7 +184,7 @@ public class ArrayVisualizer extends Canvas implements VisualizationCallback {
         clearHighlights();
 
         try {
-            Thread.sleep(50);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -165,7 +195,7 @@ public class ArrayVisualizer extends Canvas implements VisualizationCallback {
         setSorted(start, end);
 
         try {
-            Thread.sleep(50);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
